@@ -237,4 +237,90 @@ $arrayObject += $obj
 
 $arrayObject | Sort-Object $Sort | Format-Table -AutoSize
     `
+
+  snippet5 =
+    `
+#input pc name into this array as a string. i.e. "PC01"
+$name = Read-Host -Prompt "Input Computer Name"
+$ArrComputers =  $name
+
+Clear-Host
+foreach ($Computer in $ArrComputers)
+{
+    $computerSystem = get-wmiobject Win32_ComputerSystem -Computer $Computer
+    $computerBIOS = get-wmiobject Win32_BIOS -Computer $Computer
+    $computerOS = get-wmiobject Win32_OperatingSystem -Computer $Computer
+    $computerCPU = get-wmiobject Win32_Processor -Computer $Computer
+    $computerHDD = Get-WmiObject Win32_LogicalDisk -ComputerName $Computer -Filter drivetype=3
+        write-host "System Information for: " $computerSystem.Name -BackgroundColor DarkCyan
+        "-------------------------------------------------------"
+        "Manufacturer: " + $computerSystem.Manufacturer
+        "Model: " + $computerSystem.Model
+        "Serial Number: " + $computerBIOS.SerialNumber
+        "CPU: " + $computerCPU.Name
+        "HDD Capacity: "  + "{0:N2}" -f ($computerHDD.Size/1GB) + "GB"
+        "HDD Space: " + "{0:P2}" -f ($computerHDD.FreeSpace/$computerHDD.Size) + " Free (" + "{0:N2}" -f ($computerHDD.FreeSpace/1GB) + "GB)"
+        "RAM: " + "{0:N2}" -f ($computerSystem.TotalPhysicalMemory/1GB) + "GB"
+        "Operating System: " + $computerOS.caption + ", Service Pack: " + $computerOS.ServicePackMajorVersion
+        "User logged In: " + $computerSystem.UserName
+        "Last Reboot: " + $computerOS.ConvertToDateTime($computerOS.LastBootUpTime)
+        ""
+        "-------------------------------------------------------"
+}
+
+Read-Host -Prompt "Press any key to continue"
+    `
+
+  snippet6 =
+    `
+this is SO useful in testing powershell scripts under the SYSTEM authority.
+If you are making an image that won’t require any network access or can’t (like a laptop or AIO on wifi) then you
+will want to test your scripts using this tool.
+
+RUN POWERSHELL under SYSTEM authority using psexec:
+
+https://specopssoft.com/blog/how-to-become-the-local-system-account-with-psexec/
+
+https://powershell-guru.com/powershell-tip-53-run-powershell-as-system/
+
+1.)copy the psexec.exe to system32
+
+2.)run cmd as admin
+
+3.)psexec -i -s powershell.exe (this opens up powershell session as system)
+
+4.)test scripts under system
+
+
+
+PowerShell scripts that run locally run under System but for some reason things like adding a local user do not work.
+
+the Solution for this is to just rename the default local administrator account: that runs under System no issue.
+    `
+
+  snippet7 =
+    `
+Copy-Item "\\\\networkpath\\MitelConnect.msi" -Destination "C:\\temp"
+#THE TEMP FOLDER MUST ALREADY EXIST FOR IT TO COPY
+$ShedService = New-Object -comobject 'Schedule.Service'
+$ShedService.Connect()
+
+$Task = $ShedService.NewTask(0)
+$Task.RegistrationInfo.Description = "Mitel Update - Runs when user logs on, and under SYSTEM context"
+$Task.Settings.Enabled = $true
+$Task.Settings.AllowDemandStart = $true
+
+$trigger = $task.triggers.Create(9)
+$trigger.Enabled = $true
+#$Arguments ='/S /V"/qn /lv C:\\temp\\SetupLog.log"'
+$Arguments ="/S /qn"
+$msbuild = "C:\\temp\\MitelConnect.msi"
+$action = $Task.Actions.Create(0)
+$action.Path = $msbuild
+$action.Arguments = $Arguments
+
+$taskFolder = $ShedService.GetFolder("\\")
+$taskFolder.RegisterTaskDefinition("Run at user logon", $Task , 6, "System", $null, 4)
+
+    `
 }
