@@ -11,6 +11,7 @@ import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { KnowledgeComponent } from './knowledge/knowledge.component';
 import { PowershellComponent } from './powershell/powershell.component';
 import { SccmComponent } from './sccm/sccm.component';
+import { RaspberrypiComponent } from './raspberrypi/raspberrypi.component';
 
 
 @NgModule({
@@ -22,6 +23,7 @@ import { SccmComponent } from './sccm/sccm.component';
     KnowledgeComponent,
     PowershellComponent,
     SccmComponent,
+    RaspberrypiComponent,
   ],
   imports: [
     BrowserModule,

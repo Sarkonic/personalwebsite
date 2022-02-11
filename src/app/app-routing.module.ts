@@ -8,6 +8,7 @@ import { ResumeComponent} from './resume/resume.component';
 import { KnowledgeComponent } from './knowledge/knowledge.component';
 import {PowershellComponent} from "./powershell/powershell.component";
 import {SccmComponent} from "./sccm/sccm.component";
+import {RaspberrypiComponent} from "./raspberrypi/raspberrypi.component";
 
 const routes: Routes = [
   {path: '', component: HomeComponent},
@@ -15,7 +16,8 @@ const routes: Routes = [
   {path: 'resume', component: ResumeComponent},
   {path: 'knowledge', component: KnowledgeComponent},
   {path: 'powershell', component: PowershellComponent},
-  {path: 'sccm', component: SccmComponent}
+  {path: 'sccm', component: SccmComponent},
+  {path: 'raspberrypi', component: RaspberrypiComponent}
 
 ];
 
